@@ -1,0 +1,61 @@
+﻿@model EveryPara[,]
+
+    <table id="raspTb">
+        <tr><th>time</th><th>пн</th><th>вт</th><th>ср</th><th>чт</th><th>пт</th><th>сб</th><th>вс</th></tr>
+        @for (int i = 0; i < 4; i++)
+        {
+            List<string> listPar = new List<string>();
+            listPar.Add("8-30 -- 10-05");
+            listPar.Add("10-15 -- 11-50");
+            listPar.Add("12-30 -- 14-05");
+            listPar.Add("14-15 -- 15-50");
+            string nowpara = "para" + (i + 1).ToString();
+    <tr id="@nowpara">
+        <td>@listPar[i]</td>
+        @for (int j = 0; j < 7; j++)
+        {
+            string nowid = (j + 1).ToString() + (i + 1).ToString();
+            @if (Model[i, j] != null)
+            {
+                string nowStr = Model[i, j].Predmet + " " + Model[i, j].Kabinet + " " + Model[i, j].Prepod;
+                <td id="@nowid" onclick="selectPara(this)" style="cursor:pointer">
+                    
+                    @nowStr
+                </td>
+
+            }
+            else if (Model[0, j] == null || Model[0, j].Predmet != "Holyday")
+            {
+                <td id="@nowid" onclick="selectPara(this)" style="cursor:pointer">
+
+                </td>
+            }
+
+            }
+    </tr>
+        }
+    </table>
+
+<select form="data" id="prepod" onchange="addPara()">
+    <option disabled selected>Select prepod</option>
+    <option>pr1</option>
+    <option>pr2</option>
+</select>
+
+<select form="data" id="kabinet" onchange="addPara()">
+    <option disabled selected>Select Kab</option>
+    <option>101</option>
+    <option>102</option>
+</select>
+
+<select form="data" id="predmet" onchange="addPara()">
+    <option disabled selected>Select predmet</option>
+    <option>predmet1</option>
+    <option>predmet2</option>
+</select>
+
+<style>
+    #raspTb tr td{
+        border:1px solid black;
+    }
+</style>

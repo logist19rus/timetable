@@ -1,0 +1,124 @@
+﻿@model LolModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@*<form id="data" href="#">
+
+    </form>*@
+
+
+
+<a href="@Url.Action("clear","Home")" id="ssa">aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</a>
+
+<select id="GroupSel" class="form-control">
+    <option selected disabled>Выберите группу</option>
+    <option>СБ19-01</option>
+    <option>СБ18-01</option>
+</select>
+
+<input type="date" class="form-control" id="date" name="date" placeholder="Дата" required>
+
+<input type="submit" onclick="EntrySelect()" value="Посмотреть расписание" />
+
+<div id="lol">
+
+</div>
+
+<input type="submit" value="adddd" onclick="saveChange()" />
+
+<style>
+    .sel {
+        background-color: blue;
+    }
+</style>
+<script>
+    //переключение ячеек
+    function selectPara(prNum) {
+        var sq = document.getElementsByClassName("sel");
+        if (sq.length > 0) {
+            sq[0].classList.remove("sel");
+        }
+        var nowSel = document.getElementById(prNum.id);
+        nowSel.classList.add("sel");
+        editSelects(nowSel.innerText);
+    }
+
+    function editSelects(thisText) {
+        if (thisText != "") {
+            var subText = thisText.split(" ");
+            document.querySelector("#predmet").value = subText[0];
+            document.querySelector("#kabinet").value = subText[1];
+            document.querySelector("#prepod").value = subText[2];
+        }
+        else {
+            document.querySelector("#predmet").value = "Select predmet";
+            document.querySelector("#kabinet").value = "Select Kab";
+            document.querySelector("#prepod").value = "Select prepod";
+        }
+    }
+
+</script>
+
+@*работа с данными новых пар*@
+<script>
+    function addPara() {
+        let group = $('#GroupSel').val();
+        let kab = $('#kabinet').val();
+        let prepod = $('#prepod').val();
+        let predmet = $('#predmet').val();
+
+        var sq = document.getElementsByClassName("sel");
+        if (sq.length > 0 & predmet != null) {
+            var prNum = document.getElementById(sq[0].id);
+            var nowStr = predmet;
+            if (kab != null)
+                nowStr += " " + kab;
+            if (prepod != null)
+                nowStr += " " + prepod;
+
+            prNum.innerText = nowStr;
+
+            $.ajax({
+                url: '@Url.Action("add", "rasp")',
+                type: 'Post',
+                data: { 'Group': group, 'kabinet': kab, 'prepod': prepod, 'predmet': predmet, 'idPara': prNum.id }
+            });
+        }
+    }
+
+    function saveChange() {
+        if ($('#predmet').val() != null) {
+            $.ajax({
+                url: '@Url.Action("confirm", "rasp")',
+                type: 'Post',
+                success: alert('Изменения сохранены')
+            });
+        }
+    }
+
+    function YrokParam() {
+        let param = $('#GroupSel').val();
+        let nowDate = $('#date').val();
+        $('#lol').removeData();
+        $.ajax({
+            url: '@Url.Action("GiveMeLiveSyka", "rasp")',
+            type: 'Get',
+            data: { 'Group': param, 'nowDateStr': nowDate },
+            success: function (res) {
+                $('#lol').html(res);
+            },
+            error: function () {
+                alert('phelnah');
+            }
+        });
+    }
+
+    function EntrySelect() {
+        if (confirm('Все несохраненные данные будут утеряны')) {
+            YrokParam();
+        }
+    }
+
+    window.onload = YrokParam();
+</script>
